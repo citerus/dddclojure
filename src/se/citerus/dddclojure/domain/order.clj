@@ -3,14 +3,25 @@
 ;;Order aggregate
 
 (defprotocol Order
-  (order-total [this] "calculate-order-total")
-  (add-item [product qty piece-price])
-  (remove-item [product qty])
-  (close-order [this]))
+  (add-item [this product qty piece-price] "Add an item to the order")
+  (remove-item [this product qty] "Remove item from order")
+  (order-total [this] "Calculate order total")
+  (close-order [this] "Close order, it is not cool to add or remove items to a closd order"))
 
-(defrecord SimpleOrder [number date status limit lines])
+(defn line-total [{:keys [qty piece-price]}]
+  (* qty piece-price))
 
 (defrecord LineItem [product qty piece-price])
+
+(defrecord SimpleOrder [number date status limit lines]
+  Order
+
+  (add-item [this product qty piece-price]
+    (update-in this [:lines] conj (LineItem. product qty piece-price)))
+
+  (order-total [this]
+    (reduce #(+ %1 (line-total %2)) 0 (:lines this))))
+
 
 ;; Order factory methods
 
