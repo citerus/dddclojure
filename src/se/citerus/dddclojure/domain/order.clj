@@ -22,12 +22,16 @@
   Order
   (add-item [this product qty piece-price]
     (update-in this [:lines] assoc product (LineItem. product qty piece-price)))
+  
   (order-total [this]
     (reduce #(+ %1 (line-total %2)) 0 (vals (:lines this))))
+
   (remove-item [this product qty]
-    (if (> (-> this :lines (get product) :qty) qty)
-      (update-in this [:lines product :qty] - qty)
-      (dissoc-in this [:lines product]))))
+    (if-let [line (-> this :lines (get product))]
+      (if (> (:qty line) qty)
+        (update-in this [:lines product :qty] - qty)
+        (dissoc-in this [:lines product]))
+      this)))
 
 
 ;; Order factory methods

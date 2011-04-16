@@ -64,4 +64,30 @@
     (remove-item order-with-items "Cheese" 2)
     =>
     (SimpleOrder. 1 order-time-point ::o/open 2000
-      {"Ham" (LineItem. "Ham" 1 20)})))
+      {"Ham" (LineItem. "Ham" 1 20)})
+
+    (remove-item order-with-items "Cheese" 3)
+    =>
+    (SimpleOrder. 1 order-time-point ::o/open 2000
+      {"Ham" (LineItem. "Ham" 1 20)})
+
+
+    (remove-item order-with-items "Milk" 3)
+    =>
+    (SimpleOrder. 1 order-time-point ::o/open 2000
+      {"Cheese" (LineItem. "Cheese" 2 10),
+       "Ham" (LineItem. "Ham" 1 20)})))
+
+
+
+;(facts "Adding items already in order increments qty"
+;  (let [order-with-items
+;        (-> (create-order 1 order-time-point 2000)
+;          (add-item "Cheese" 2 10)
+;          (add-item "Ham" 1 20))]
+;
+;    (add-item order-with-items "Cheese" 2 10)
+;    =>
+;    (SimpleOrder. 1 order-time-point ::o/open 2000
+;      {"Cheese" (LineItem. "Cheese" 2 10),
+;       "Ham" (LineItem. "Ham" 1 20)})))
