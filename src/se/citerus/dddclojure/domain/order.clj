@@ -1,4 +1,6 @@
-(ns se.citerus.dddclojure.domain.order)
+(ns se.citerus.dddclojure.domain.order
+  (:use
+    [clojure.contrib.core :only (dissoc-in)]))
 
 ;;Order aggregate
 
@@ -23,8 +25,9 @@
   (order-total [this]
     (reduce #(+ %1 (line-total %2)) 0 (vals (:lines this))))
   (remove-item [this product qty]
-    (update-in this [:lines product :qty] - qty))
-  )
+    (if (> (-> this :lines (get product) :qty) qty)
+      (update-in this [:lines product :qty] - qty)
+      (dissoc-in this [:lines product]))))
 
 
 ;; Order factory methods
