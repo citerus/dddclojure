@@ -1,7 +1,7 @@
 (ns se.citerus.dddclojure.domain.order-test
   (:use
     [se.citerus.dddclojure.domain.order
-     :only (create-order add-item order-total remove-item)]
+     :only (create-order add-item total remove-item)]
     [midje.sweet])
   (:require
     [se.citerus.dddclojure.domain.order :as o])
@@ -38,7 +38,7 @@
               (add-item (LineProduct. "Ham" 20) 1)
               (add-item (LineProduct. "Juice" 15) 2))]
 
-        (order-total order-with-items)
+        (total order-with-items)
         => 70))
 
     (facts "Remove item from order"
