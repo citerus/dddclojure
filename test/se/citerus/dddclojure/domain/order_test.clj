@@ -6,7 +6,7 @@
   (:require
     [se.citerus.dddclojure.domain.order :as o])
   (:import
-    [se.citerus.dddclojure.domain.order SimpleOrder LineItem LineProduct]
+    [se.citerus.dddclojure.domain.order PurchaseOrder LineItem LineProduct]
     [org.joda.time DateTime]))
 
 
@@ -16,20 +16,20 @@
 
 (fact "Create order"
   (create-order 1 order-time-point 2000)
-  => (SimpleOrder. 1 order-time-point ::o/open 2000 {}))
+  => (PurchaseOrder. 1 order-time-point ::o/open 2000 {}))
 
 (facts "Order scenario"
 
   (fact "Create order"
     (create-order 1 order-time-point 2000)
-    => (SimpleOrder. 1 order-time-point ::o/open 2000 {}))
+    => (PurchaseOrder. 1 order-time-point ::o/open 2000 {}))
 
   (let [order (create-order 1 order-time-point 2000)
         cheese (LineProduct. "Cheese" 10)]
     (fact "Add one item"
 
       (add-item order cheese 2)
-      => (SimpleOrder. 1 order-time-point ::o/open 2000 {cheese (LineItem. cheese 2)}))
+      => (PurchaseOrder. 1 order-time-point ::o/open 2000 {cheese (LineItem. cheese 2)}))
 
     (fact "Calculate order total"
       (let [order-with-items
@@ -51,7 +51,7 @@
 
         (remove-item order-with-items cheese 1)
         =>
-        (SimpleOrder. 1 order-time-point ::o/open 2000
+        (PurchaseOrder. 1 order-time-point ::o/open 2000
           {cheese (LineItem. cheese 1)
            ham (LineItem. ham 1)})))))
 
@@ -68,18 +68,18 @@
 
     (remove-item order-with-items cheese 2)
     =>
-    (SimpleOrder. 1 order-time-point ::o/open 2000
+    (PurchaseOrder. 1 order-time-point ::o/open 2000
       {ham (LineItem. ham 1)})
 
     (remove-item order-with-items cheese 3)
     =>
-    (SimpleOrder. 1 order-time-point ::o/open 2000
+    (PurchaseOrder. 1 order-time-point ::o/open 2000
       {ham (LineItem. ham 1)})
 
 
     (remove-item order-with-items "Milk" 3)
     =>
-    (SimpleOrder. 1 order-time-point ::o/open 2000
+    (PurchaseOrder. 1 order-time-point ::o/open 2000
       {cheese (LineItem. cheese 2),
        ham (LineItem. ham 1)})))
 
@@ -94,6 +94,6 @@
 
       (add-item order-with-items cheese 2)
       =>
-      (SimpleOrder. 1 order-time-point ::o/open 2000
+      (PurchaseOrder. 1 order-time-point ::o/open 2000
         {cheese (LineItem. cheese 4),
          ham (LineItem. ham 1)})))

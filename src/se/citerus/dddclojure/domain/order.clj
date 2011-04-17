@@ -22,7 +22,7 @@
     (* qty (:piece-price line-product))))
 
 
-(defrecord SimpleOrder [number date status limit lines]
+(defrecord PurchaseOrder [number date status limit lines]
 
   Order
   (add-item [this product qty]
@@ -46,6 +46,6 @@
 
 (defn create-order [number date limit]
   ;User :pre condition to handle limit
-  (SimpleOrder. number date ::open limit {}))
+  (PurchaseOrder. number date ::open limit {}))
 
 
