@@ -16,11 +16,14 @@
 (defn find-line-item [lines product]
   (filter #(= (:product %) product) lines))
 
+
 (defrecord LineProduct [product piece-price])
+
 
 (defrecord LineItem [line-product qty])
 
-(defrecord SimpleOrder [number date status limit lines] ;Create FastOrder where LineItems are in a map
+
+(defrecord SimpleOrder [number date status limit lines]
   Order
   (add-item [this product qty]
     (update-in this [:lines] assoc product (LineItem. product qty)))
