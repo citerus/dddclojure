@@ -14,10 +14,6 @@
 
 (def order-time-point (DateTime. 2011 4 16 21 31 0 0))
 
-(fact "Create order"
-  (create-order 1 order-time-point 2000)
-  => (PurchaseOrder. 1 order-time-point ::o/open 2000 {}))
-
 (facts "Order scenario"
 
   (fact "Create order"
@@ -83,17 +79,32 @@
       {cheese (LineItem. cheese 2),
        ham (LineItem. ham 1)})))
 
-  (facts "Adding items already in order increments qty"
-    (let [
-      cheese (LineProduct. "Cheese" 10)
-      ham (LineProduct. "Ham" 20)
-      order-with-items
-      (-> (create-order 1 order-time-point 2000)
-        (add-item cheese 2)
-        (add-item ham 1))]
+(facts "Adding items already in order increments qty"
+  (let [
+    cheese (LineProduct. "Cheese" 10)
+    ham (LineProduct. "Ham" 20)
+    order-with-items
+    (-> (create-order 1 order-time-point 2000)
+      (add-item cheese 2)
+      (add-item ham 1))]
 
-      (add-item order-with-items cheese 2)
-      =>
-      (PurchaseOrder. 1 order-time-point ::o/open 2000
-        {cheese (LineItem. cheese 4),
-         ham (LineItem. ham 1)})))
+    (add-item order-with-items cheese 2)
+    =>
+    (PurchaseOrder. 1 order-time-point ::o/open 2000
+      {cheese (LineItem. cheese 4),
+       ham (LineItem. ham 1)})))
+
+
+(fact "Create order"
+  (create-order 1 order-time-point 2000)
+  => (PurchaseOrder. 1 order-time-point ::o/open 2000 {}))
+
+
+(facts "Order limit must be  100 <= limit <= 10000"
+  (create-order 1 order-time-point 100) => truthy
+  (create-order 1 order-time-point 99) => (throws AssertionError)
+  
+  (create-order 1 order-time-point 10000) => truthy
+  (create-order 1 order-time-point 10001) => (throws AssertionError))
+
+

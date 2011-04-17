@@ -45,7 +45,7 @@
 ;; Order factory methods
 
 (defn create-order [number date limit]
-  ;User :pre condition to handle limit
+  {:pre [(>= limit 100) (<= limit 10000)]  }
   (PurchaseOrder. number date ::open limit {}))
 
 
