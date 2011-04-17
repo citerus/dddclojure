@@ -7,7 +7,7 @@
 (defprotocol Order
   (add-item [this product qty] "Add an item to the order")
   (remove-item [this product qty] "Remove item from order")
-  (close-order [this] "Close order, it is not cool to add or remove items to a closd order"))
+  (close-order [this] "Close order, it is not cool to add or remove items to a closed order"))
 
 (defprotocol Total
   (total [this] "Calculate total"))
