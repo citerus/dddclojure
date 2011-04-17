@@ -83,7 +83,6 @@
       {cheese (LineItem. cheese 2),
        ham (LineItem. ham 1)})))
 
-(comment ;not implemented
   (facts "Adding items already in order increments qty"
     (let [
       cheese (LineProduct. "Cheese" 10)
@@ -98,4 +97,3 @@
       (SimpleOrder. 1 order-time-point ::o/open 2000
         {cheese (LineItem. cheese 4),
          ham (LineItem. ham 1)})))
-  )

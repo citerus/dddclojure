@@ -26,7 +26,9 @@
 (defrecord SimpleOrder [number date status limit lines]
   Order
   (add-item [this product qty]
-    (update-in this [:lines] assoc product (LineItem. product qty)))
+    (if-let [line (-> this :lines (get product))]
+      (update-in this [:lines product :qty] + qty)
+      (update-in this [:lines] assoc product (LineItem. product qty))))
 
   (order-total [this]
     (reduce #(+ %1 (line-total %2)) 0 (vals (:lines this))))
@@ -37,7 +39,6 @@
         (update-in this [:lines product :qty] - qty)
         (dissoc-in this [:lines product]))
       this)))
-
 
 ;; Order factory methods
 
