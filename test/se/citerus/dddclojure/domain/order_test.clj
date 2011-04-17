@@ -31,15 +31,15 @@
       (add-item order cheese 2)
       => (SimpleOrder. 1 order-time-point ::o/open 2000 {cheese (LineItem. cheese 2)}))
 
-    ;    (fact "Calculate order total"
-    ;      (let [order-with-items
-    ;            (-> order
-    ;              (add-item "Cheese" 2 10)
-    ;              (add-item "Ham" 1 20)
-    ;              (add-item "Juice" 2 15))]
-    ;
-    ;        (order-total order-with-items)
-    ;        => 70))
+        (fact "Calculate order total"
+          (let [order-with-items
+                (-> order
+                  (add-item (LineProduct. "Cheese" 10) 2)
+                  (add-item (LineProduct. "Ham" 20) 1)
+                  (add-item (LineProduct. "Juice" 15) 2))]
+
+            (order-total order-with-items)
+            => 70))
     ;
     ;    (facts "Remove item from order"
     ;      (let [order-with-items

@@ -10,13 +10,13 @@
   (order-total [this] "Calculate order total")
   (close-order [this] "Close order, it is not cool to add or remove items to a closd order"))
 
-(defn line-total [{:keys [qty piece-price]}] ;TODO: Define in protocol?
-  (* qty piece-price))
+(defn line-total [{:keys [qty line-product]}] ;TODO: Define in protocol?
+  (* qty (:piece-price line-product)))
 
 (defn find-line-item [lines product]
   (filter #(= (:product %) product) lines))
 
-(defrecord LineProduct [product pice-price])
+(defrecord LineProduct [product piece-price])
 
 (defrecord LineItem [line-product qty])
 
@@ -24,7 +24,7 @@
   Order
   (add-item [this product qty]
     (update-in this [:lines] assoc product (LineItem. product qty)))
-  
+
   (order-total [this]
     (reduce #(+ %1 (line-total %2)) 0 (vals (:lines this))))
 
