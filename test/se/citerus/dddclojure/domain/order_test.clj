@@ -58,41 +58,44 @@
 
 ;also check (but not in scenario) that 0 or negative qty lines are removed, and
 
-(comment
-  (facts "Removing items leaving zero (or negative) qty drops entire line"
-    (let [order-with-items
-          (-> (create-order 1 order-time-point 2000)
-            (add-item "Cheese" 2 10)
-            (add-item "Ham" 1 20))]
+(facts "Removing items leaving zero (or negative) qty drops entire line"
+  (let [cheese (LineProduct. "Cheese" 10)
+        ham (LineProduct. "Ham" 20)
+        order-with-items
+        (-> (create-order 1 order-time-point 2000)
+          (add-item cheese 2)
+          (add-item ham 1))]
 
-      (remove-item order-with-items "Cheese" 2)
-      =>
-      (SimpleOrder. 1 order-time-point ::o/open 2000
-        {"Ham" (LineItem. "Ham" 1 20)})
+    (remove-item order-with-items cheese 2)
+    =>
+    (SimpleOrder. 1 order-time-point ::o/open 2000
+      {ham (LineItem. ham 1)})
 
-      (remove-item order-with-items "Cheese" 3)
-      =>
-      (SimpleOrder. 1 order-time-point ::o/open 2000
-        {"Ham" (LineItem. "Ham" 1 20)})
+    (remove-item order-with-items cheese 3)
+    =>
+    (SimpleOrder. 1 order-time-point ::o/open 2000
+      {ham (LineItem. ham 1)})
 
 
-      (remove-item order-with-items "Milk" 3)
-      =>
-      (SimpleOrder. 1 order-time-point ::o/open 2000
-        {"Cheese" (LineItem. "Cheese" 2 10),
-         "Ham" (LineItem. "Ham" 1 20)})))
-  )
+    (remove-item order-with-items "Milk" 3)
+    =>
+    (SimpleOrder. 1 order-time-point ::o/open 2000
+      {cheese (LineItem. cheese 2),
+       ham (LineItem. ham 1)})))
 
-(comment
+(comment ;not implemented
   (facts "Adding items already in order increments qty"
-    (let [order-with-items
-          (-> (create-order 1 order-time-point 2000)
-            (add-item "Cheese" 2 10)
-            (add-item "Ham" 1 20))]
+    (let [
+      cheese (LineProduct. "Cheese" 10)
+      ham (LineProduct. "Ham" 20)
+      order-with-items
+      (-> (create-order 1 order-time-point 2000)
+        (add-item cheese 2)
+        (add-item ham 1))]
 
-      (add-item order-with-items "Cheese" 2 10)
+      (add-item order-with-items cheese 2)
       =>
       (SimpleOrder. 1 order-time-point ::o/open 2000
-        {"Cheese" (LineItem. "Cheese" 2 10),
-         "Ham" (LineItem. "Ham" 1 20)})))
+        {cheese (LineItem. cheese 4),
+         ham (LineItem. ham 1)})))
   )
