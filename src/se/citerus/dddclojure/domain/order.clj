@@ -23,7 +23,7 @@
 
 
 (defrecord SimpleOrder [number date status limit lines]
-  
+
   Order
   (add-item [this product qty]
     (if-let [line (-> this :lines (get product))]
@@ -39,7 +39,8 @@
 
   Total
   (total [this]
-    (reduce #(+ %1 (total %2)) 0 (vals (:lines this)))))
+    (let [line-totals (map #(total %) (vals (:lines this)))]
+      (apply + line-totals))))
 
 ;; Order factory methods
 
