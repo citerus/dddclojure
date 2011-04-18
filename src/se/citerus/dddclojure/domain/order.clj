@@ -22,10 +22,12 @@
     (* qty (:piece-price line-product))))
 
 
-(defrecord PurchaseOrder [number date status limit lines]
+(defrecord PurchaseOrder [number date status limit lines])
 
+(extend-type PurchaseOrder
   Order
   (add-item [this product qty]
+    {:post [(<= (total %) (:limit %))]}
     (if-let [line (-> this :lines (get product))]
       (update-in this [:lines product :qty] + qty)
       (update-in this [:lines] assoc product (LineItem. product qty))))
@@ -45,7 +47,7 @@
 ;; Order factory methods
 
 (defn create-order [number date limit]
-  {:pre [(>= limit 100) (<= limit 10000)]  }
+  {:pre [(>= limit 100) (<= limit 10000)]}
   (PurchaseOrder. number date ::open limit {}))
 
 

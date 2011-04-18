@@ -103,19 +103,17 @@
 (facts "Order limit must be  100 <= limit <= 10000"
   (create-order 1 order-time-point 100) => truthy
   (create-order 1 order-time-point 99) => (throws AssertionError)
-  
+
   (create-order 1 order-time-point 10000) => truthy
   (create-order 1 order-time-point 10001) => (throws AssertionError))
 
-(future-fact "Order total must not be above order limit"
+(fact "Order total must not be above order limit"
   (let [
-    cheese (LineProduct. "Cheese" 10)
-    ham (LineProduct. "Ham" 20)
-    order-with-items
-    (-> (create-order 1 order-time-point 15)
-      (add-item cheese 1))]
-    
-    (add-item ham 1) => (throws AssertionError)))
+    cheese (LineProduct. "Cheese" 100)
+    ham (LineProduct. "Ham" 200)
+    order (-> (create-order 1 order-time-point 150) (add-item cheese 1))]
+
+    (add-item order ham 1) => (throws AssertionError)))
 
       
 
