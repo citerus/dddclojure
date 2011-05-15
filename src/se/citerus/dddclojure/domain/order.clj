@@ -12,6 +12,13 @@
 (defprotocol Total
   (total [this] "Calculate total"))
 
+;; Order repository
+(defprotocol Repository
+  (store [this] "Store order")
+  (find-order [this number] "Find order by number"))
+
+
+;; Records
 
 (defrecord LineProduct [product piece-price])
 
