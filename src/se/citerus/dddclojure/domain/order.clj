@@ -5,9 +5,12 @@
 ;;Order aggregate
 
 (defprotocol Order
-  (add-item [this product qty] "Add an item to the order")
-  (remove-item [this product qty] "Remove item from order")
-  (close-order [this] "Close order, it is not cool to add or remove items to a closed order"))
+  (add-item [this product qty]
+    "Add an item to the order")
+  (remove-item [this product qty]
+    "Remove item from order")
+  (close-order [this]
+    "Close order, it is not cool to change a closed order"))
 
 (defprotocol Total
   (total [this] "Calculate total"))
@@ -23,7 +26,7 @@
 (defrecord LineProduct [product piece-price])
 
 
-(defrecord LineItem [line-product qty]
+(defrecord LineItem [line-product qty]  ;;TODO: Change argument order, reads better
   Total
   (total [{:keys [qty line-product]}]
     (* qty (:piece-price line-product))))
