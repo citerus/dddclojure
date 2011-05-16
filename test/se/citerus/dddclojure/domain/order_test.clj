@@ -12,20 +12,20 @@
 
 ;-- parse-int
 
-(def order-time-point (DateTime. 2011 4 16 21 31 0 0))
+(def order-time (DateTime. 2011 4 16 21 31 0 0))
 
 (facts "Order scenario"
 
   (fact "Create order"
-    (create-order 1 order-time-point 2000)
-    => (PurchaseOrder. 1 order-time-point ::o/open 2000 {}))
+    (create-order 1 order-time 2000)
+    => (PurchaseOrder. 1 order-time ::o/open 2000 {}))
 
-  (let [order (create-order 1 order-time-point 2000)
+  (let [order (create-order 1 order-time 2000)
         cheese (LineProduct. "Cheese" 10)]
-    (fact "Add one item"
 
+    (fact "Add one item"
       (add-item order cheese 2)
-      => (PurchaseOrder. 1 order-time-point ::o/open 2000 {cheese (LineItem. cheese 2)}))
+      => (PurchaseOrder. 1 order-time ::o/open 2000 {cheese (LineItem. cheese 2)}))
 
     (fact "Calculate order total"
       (let [order-with-items
@@ -47,10 +47,9 @@
 
         (remove-item order-with-items cheese 1)
         =>
-        (PurchaseOrder. 1 order-time-point ::o/open 2000
+        (PurchaseOrder. 1 order-time ::o/open 2000
           {cheese (LineItem. cheese 1)
            ham (LineItem. ham 1)})))))
-
 
 ;also check (but not in scenario) that 0 or negative qty lines are removed, and
 
@@ -58,24 +57,24 @@
   (let [cheese (LineProduct. "Cheese" 10)
         ham (LineProduct. "Ham" 20)
         order-with-items
-        (-> (create-order 1 order-time-point 2000)
+        (-> (create-order 1 order-time 2000)
           (add-item cheese 2)
           (add-item ham 1))]
 
     (remove-item order-with-items cheese 2)
     =>
-    (PurchaseOrder. 1 order-time-point ::o/open 2000
+    (PurchaseOrder. 1 order-time ::o/open 2000
       {ham (LineItem. ham 1)})
 
     (remove-item order-with-items cheese 3)
     =>
-    (PurchaseOrder. 1 order-time-point ::o/open 2000
+    (PurchaseOrder. 1 order-time ::o/open 2000
       {ham (LineItem. ham 1)})
 
 
     (remove-item order-with-items "Milk" 3)
     =>
-    (PurchaseOrder. 1 order-time-point ::o/open 2000
+    (PurchaseOrder. 1 order-time ::o/open 2000
       {cheese (LineItem. cheese 2),
        ham (LineItem. ham 1)})))
 
@@ -84,34 +83,34 @@
     cheese (LineProduct. "Cheese" 10)
     ham (LineProduct. "Ham" 20)
     order-with-items
-    (-> (create-order 1 order-time-point 2000)
+    (-> (create-order 1 order-time 2000)
       (add-item cheese 2)
       (add-item ham 1))]
 
     (add-item order-with-items cheese 2)
     =>
-    (PurchaseOrder. 1 order-time-point ::o/open 2000
+    (PurchaseOrder. 1 order-time ::o/open 2000
       {cheese (LineItem. cheese 4),
        ham (LineItem. ham 1)})))
 
 
 (fact "Create order"
-  (create-order 1 order-time-point 2000)
-  => (PurchaseOrder. 1 order-time-point ::o/open 2000 {}))
+  (create-order 1 order-time 2000)
+  => (PurchaseOrder. 1 order-time ::o/open 2000 {}))
 
 
 (facts "Order limit must be  100 <= limit <= 10000"
-  (create-order 1 order-time-point 100) => truthy
-  (create-order 1 order-time-point 99) => (throws AssertionError)
+  (create-order 1 order-time 100) => truthy
+  (create-order 1 order-time 99) => (throws AssertionError)
 
-  (create-order 1 order-time-point 10000) => truthy
-  (create-order 1 order-time-point 10001) => (throws AssertionError))
+  (create-order 1 order-time 10000) => truthy
+  (create-order 1 order-time 10001) => (throws AssertionError))
 
 (fact "Order total must not be above order limit"
   (let [
     cheese (LineProduct. "Cheese" 100)
     ham (LineProduct. "Ham" 200)
-    order (-> (create-order 1 order-time-point 150) (add-item cheese 1))]
+    order (-> (create-order 1 order-time 150) (add-item cheese 1))]
 
     (add-item order ham 1) => (throws AssertionError)))
 
