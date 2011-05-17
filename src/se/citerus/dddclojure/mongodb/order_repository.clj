@@ -1,3 +1,12 @@
-(ns se.citerus.dddclojure.mongodb.order_repository)
+(ns se.citerus.dddclojure.mongodb.order-repository
+  (:use [somnium.congomongo]))
 
-;;Repository to store Orders in MongoDB
+(mongo! :db "dddclojure")
+
+(defn store! [order]
+  (insert! :orders order))
+
+(defn find-order [order-id] 
+  (fetch-one
+    :orders
+    :where {:number order-id}))

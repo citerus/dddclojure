@@ -18,14 +18,14 @@
 
   (fact "Create order"
     (create-order 1 order-time 2000)
-    => (PurchaseOrder. 1 order-time ::o/open 2000 {}))
+    => (PurchaseOrder. 1 order-time ::o/open 2000 []))
 
   (let [order (create-order 1 order-time 2000)
         cheese (LineProduct. "Cheese" 10)]
 
     (fact "Add one item"
       (add-item order cheese 2)
-      => (PurchaseOrder. 1 order-time ::o/open 2000 {cheese (LineItem. cheese 2)}))
+      => (PurchaseOrder. 1 order-time ::o/open 2000 [(LineItem. cheese 2)]))
 
     (fact "Calculate order total"
       (let [order-with-items
@@ -48,8 +48,8 @@
         (remove-item order-with-items cheese 1)
         =>
         (PurchaseOrder. 1 order-time ::o/open 2000
-          {cheese (LineItem. cheese 1)
-           ham (LineItem. ham 1)})))))
+          [(LineItem. cheese 1)
+           (LineItem. ham 1)])))))
 
 ;also check (but not in scenario) that 0 or negative qty lines are removed, and
 
@@ -64,19 +64,19 @@
     (remove-item order-with-items cheese 2)
     =>
     (PurchaseOrder. 1 order-time ::o/open 2000
-      {ham (LineItem. ham 1)})
+      [(LineItem. ham 1)])
 
     (remove-item order-with-items cheese 3)
     =>
     (PurchaseOrder. 1 order-time ::o/open 2000
-      {ham (LineItem. ham 1)})
+      [(LineItem. ham 1)])
 
 
     (remove-item order-with-items "Milk" 3)
     =>
     (PurchaseOrder. 1 order-time ::o/open 2000
-      {cheese (LineItem. cheese 2),
-       ham (LineItem. ham 1)})))
+      [(LineItem. cheese 2),
+       (LineItem. ham 1)])))
 
 (facts "Adding items already in order increments qty"
   (let [
@@ -90,13 +90,13 @@
     (add-item order-with-items cheese 2)
     =>
     (PurchaseOrder. 1 order-time ::o/open 2000
-      {cheese (LineItem. cheese 4),
-       ham (LineItem. ham 1)})))
+      [(LineItem. cheese 4),
+       (LineItem. ham 1)])))
 
 
 (fact "Create order"
   (create-order 1 order-time 2000)
-  => (PurchaseOrder. 1 order-time ::o/open 2000 {}))
+  => (PurchaseOrder. 1 order-time ::o/open 2000 []))
 
 
 (facts "Order limit must be  100 <= limit <= 10000"

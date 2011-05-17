@@ -1,6 +1,7 @@
 (ns se.citerus.dddclojure.domain.order
   (:use
-    [clojure.contrib.core :only (dissoc-in)]))
+    [clojure.contrib.core :only (dissoc-in)]
+    [clojure.contrib.seq-utils :only (positions)]))
 
 ;;Order aggregate
 
@@ -15,18 +16,12 @@
 (defprotocol Total
   (total [this] "Calculate total"))
 
-;; Order repository
-(defprotocol Repository
-  (store [this] "Store order")
-  (find-order [this number] "Find order by number"))
-
-
 ;; Records
 
 (defrecord LineProduct [product piece-price])
 
 
-(defrecord LineItem [line-product qty]  ;;TODO: Change argument order, reads better
+(defrecord LineItem [line-product qty] ;;TODO: Change argument order, reads better
   Total
   (total [{:keys [qty line-product]}]
     (* qty (:piece-price line-product))))
@@ -34,31 +29,33 @@
 
 (defrecord PurchaseOrder [number date status limit lines])
 
+(defn- find-line-ix [order product] (first (positions #(= (:line-product %) product) (:lines order))))
+
 (extend-type PurchaseOrder
   Order
   (add-item [this product qty]
     {:post [(<= (total %) (:limit %))]}
-    (if-let [line (-> this :lines (get product))]
-      (update-in this [:lines product :qty] + qty)
-      (update-in this [:lines] assoc product (LineItem. product qty))))
+    (if-let [ix (find-line-ix this product)]
+      (update-in this [:lines ix :qty] + qty)
+      (update-in this [:lines] conj (LineItem. product qty))))
 
   (remove-item [this product qty]
-    (if-let [line (-> this :lines (get product))]
-      (if (> (:qty line) qty)
-        (update-in this [:lines product :qty] - qty)
-        (dissoc-in this [:lines product]))
+    (if-let [ix (find-line-ix this product)]
+      (if (> (get-in this [:lines ix :qty]) qty)
+        (update-in this [:lines ix :qty] - qty)
+        (assoc this :lines (remove #(= (:line-product %) product) (:lines this))))
       this))
 
   Total
   (total [this]
-    (let [line-totals (map #(total %) (vals (:lines this)))]
+    (let [line-totals (map #(total %) (:lines this))]
       (apply + line-totals))))
 
 ;; Order factory methods
 
 (defn create-order [number date limit]
   {:pre [(>= limit 100) (<= limit 10000)]}
-  (PurchaseOrder. number date ::open limit {}))
+  (PurchaseOrder. number date ::open limit []))
 
 
 

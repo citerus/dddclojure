@@ -4,4 +4,5 @@
                  [org.clojure/clojure-contrib "1.2.0"]
                  [congomongo "0.1.3-SNAPSHOT"]
                  [midje "1.1"]
-                 [joda-time/joda-time "1.6.2"]])
+                 [joda-time/joda-time "1.6.2"]
+                 [congomongo "0.1.4-SNAPSHOT"]])
