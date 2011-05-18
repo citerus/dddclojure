@@ -3,29 +3,27 @@
     [clojure.contrib.core :only (dissoc-in)]
     [clojure.contrib.seq-utils :only (positions)]))
 
+(defprotocol Total
+  (total [this] "Calculate total"))
+
 ;;Order aggregate
 
 (defprotocol Order
-  (add-item [this product qty]
+  (add-item [this qty product]
     "Add an item to the order")
   (remove-item [this product qty]
     "Remove item from order")
   (close-order [this]
     "Close order, it is not cool to change a closed order"))
 
-(defprotocol Total
-  (total [this] "Calculate total"))
-
 ;; Records
 
 (defrecord LineProduct [product piece-price])
 
-
-(defrecord LineItem [line-product qty] ;;TODO: Change argument order, reads better
+(defrecord LineItem [qty line-product]
   Total
   (total [{:keys [qty line-product]}]
     (* qty (:piece-price line-product))))
-
 
 (defrecord PurchaseOrder [number date status limit lines])
 
@@ -33,11 +31,11 @@
 
 (extend-type PurchaseOrder
   Order
-  (add-item [this product qty]
+  (add-item [this qty product]
     {:post [(<= (total %) (:limit %))]}
     (if-let [ix (find-line-ix this product)]
       (update-in this [:lines ix :qty] + qty)
-      (update-in this [:lines] conj (LineItem. product qty))))
+      (update-in this [:lines] conj (LineItem. qty product))))
 
   (remove-item [this product qty]
     (if-let [ix (find-line-ix this product)]

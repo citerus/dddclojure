@@ -10,8 +10,6 @@
     [org.joda.time DateTime]))
 
 
-;-- parse-int
-
 (def order-time (DateTime. 2011 4 16 21 31 0 0))
 
 (facts "Order scenario"
@@ -24,15 +22,15 @@
         cheese (LineProduct. "Cheese" 10)]
 
     (fact "Add one item"
-      (add-item order cheese 2)
-      => (PurchaseOrder. 1 order-time ::o/open 2000 [(LineItem. cheese 2)]))
+      (add-item order 2 cheese)
+      => (PurchaseOrder. 1 order-time ::o/open 2000 [(LineItem. 2 cheese)]))
 
     (fact "Calculate order total"
       (let [order-with-items
             (-> order
-              (add-item (LineProduct. "Cheese" 10) 2)
-              (add-item (LineProduct. "Ham" 20) 1)
-              (add-item (LineProduct. "Juice" 15) 2))]
+              (add-item 2 (LineProduct. "Cheese" 10))
+              (add-item 1 (LineProduct. "Ham" 20))
+              (add-item 2 (LineProduct. "Juice" 15)))]
 
         (total order-with-items)
         => 70))
@@ -42,41 +40,39 @@
             ham (LineProduct. "Ham" 20)
             order-with-items
             (-> order
-              (add-item cheese 2)
-              (add-item ham 1))]
+              (add-item 2 cheese)
+              (add-item 1 ham))]
 
         (remove-item order-with-items cheese 1)
         =>
         (PurchaseOrder. 1 order-time ::o/open 2000
-          [(LineItem. cheese 1)
-           (LineItem. ham 1)])))))
-
-;also check (but not in scenario) that 0 or negative qty lines are removed, and
+          [(LineItem. 1 cheese)
+           (LineItem. 1 ham)])))))
 
 (facts "Removing items leaving zero (or negative) qty drops entire line"
   (let [cheese (LineProduct. "Cheese" 10)
         ham (LineProduct. "Ham" 20)
         order-with-items
         (-> (create-order 1 order-time 2000)
-          (add-item cheese 2)
-          (add-item ham 1))]
+          (add-item 2 cheese)
+          (add-item 1 ham))]
 
     (remove-item order-with-items cheese 2)
     =>
     (PurchaseOrder. 1 order-time ::o/open 2000
-      [(LineItem. ham 1)])
+      [(LineItem. 1 ham)])
 
     (remove-item order-with-items cheese 3)
     =>
     (PurchaseOrder. 1 order-time ::o/open 2000
-      [(LineItem. ham 1)])
+      [(LineItem. 1 ham)])
 
 
     (remove-item order-with-items "Milk" 3)
     =>
     (PurchaseOrder. 1 order-time ::o/open 2000
-      [(LineItem. cheese 2),
-       (LineItem. ham 1)])))
+      [(LineItem. 2 cheese),
+       (LineItem. 1 ham)])))
 
 (facts "Adding items already in order increments qty"
   (let [
@@ -84,14 +80,14 @@
     ham (LineProduct. "Ham" 20)
     order-with-items
     (-> (create-order 1 order-time 2000)
-      (add-item cheese 2)
-      (add-item ham 1))]
+      (add-item 2 cheese)
+      (add-item 1 ham))]
 
-    (add-item order-with-items cheese 2)
+    (add-item order-with-items 2 cheese)
     =>
     (PurchaseOrder. 1 order-time ::o/open 2000
-      [(LineItem. cheese 4),
-       (LineItem. ham 1)])))
+      [(LineItem. 4 cheese),
+       (LineItem. 1 ham)])))
 
 
 (fact "Create order"
@@ -107,12 +103,20 @@
   (create-order 1 order-time 10001) => (throws AssertionError))
 
 (fact "Order total must not be above order limit"
-  (let [
-    cheese (LineProduct. "Cheese" 100)
-    ham (LineProduct. "Ham" 200)
-    order (-> (create-order 1 order-time 150) (add-item cheese 1))]
+  (let [cheese (LineProduct. "Cheese" 100)
+        ham (LineProduct. "Ham" 200)
+        order (-> (create-order 1 order-time 150) (add-item 1 cheese))]
 
-    (add-item order ham 1) => (throws AssertionError)))
+    (add-item order 1 ham) => (throws AssertionError)))
+
+(facts "Total protocol implementations"
+  (let [line1 (LineItem. 10 (LineProduct. "Egg" 20))
+        line2 (LineItem. 4 (LineProduct. "Milk" 5))
+        order (-> (create-order 1 order-time 2000) (assoc :lines [line1 line2]))]
+
+        (total line1) => 200
+        (total line2) => 20
+        (total order) => 220))
 
       
 
