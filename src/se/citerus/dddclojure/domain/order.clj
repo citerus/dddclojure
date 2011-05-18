@@ -37,7 +37,7 @@
       (update-in this [:lines ix :qty] + qty)
       (update-in this [:lines] conj (LineItem. qty product))))
 
-  (remove-item [this product qty]
+  (remove-item [this qty product]
     (if-let [ix (find-line-ix this product)]
       (if (> (get-in this [:lines ix :qty]) qty)
         (update-in this [:lines ix :qty] - qty)

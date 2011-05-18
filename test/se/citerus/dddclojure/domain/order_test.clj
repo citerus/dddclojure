@@ -43,7 +43,7 @@
               (add-item 2 cheese)
               (add-item 1 ham))]
 
-        (remove-item order-with-items cheese 1)
+        (remove-item order-with-items 1 cheese)
         =>
         (PurchaseOrder. 1 order-time ::o/open 2000
           [(LineItem. 1 cheese)
@@ -57,18 +57,18 @@
           (add-item 2 cheese)
           (add-item 1 ham))]
 
-    (remove-item order-with-items cheese 2)
+    (remove-item order-with-items 2 cheese)
     =>
     (PurchaseOrder. 1 order-time ::o/open 2000
       [(LineItem. 1 ham)])
 
-    (remove-item order-with-items cheese 3)
+    (remove-item order-with-items 3 cheese)
     =>
     (PurchaseOrder. 1 order-time ::o/open 2000
       [(LineItem. 1 ham)])
 
 
-    (remove-item order-with-items "Milk" 3)
+    (remove-item order-with-items 3 "Milk")
     =>
     (PurchaseOrder. 1 order-time ::o/open 2000
       [(LineItem. 2 cheese),
