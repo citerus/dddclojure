@@ -12,20 +12,24 @@
 
 (def now (Date.))
 
-(def order-number 1)
+(def order-number 1000)
 
-(comment
+(comment ;Requires a running mongo-db instance
   (facts "Order scenario db test"
 
     (let [order
           (-> (create-order order-number now 2000)
             (add-item (LineProduct. "Cheese" 10) 2)
             (add-item (LineProduct. "Ham" 20) 1)
-            (add-item (LineProduct. "Juice" 15) 2))]
+            (add-item (LineProduct. "Juice" 15) 2))
+          stored-order (store! order)
+          fetched-order (find-order order-number)
+          nil-order (do (delete-order order-number) (find-order order-number))]
 
-      (fact "Create, Store, Read order"
-        (do
-          (store! order)
-          (find-order order-number))
-        => "ost")))
+      (facts
+        (println order)
+        (println stored-order)
+        (println fetched-order)
+        (get fetched-order :number) => order-number
+        nil-order => nil)))
   )
