@@ -80,7 +80,3 @@
         (total line1) => 200
         (total line2) => 20
         (total order) => 220))
-
-      
-
-
