@@ -19,9 +19,9 @@
 
     (let [order
           (-> (create-order order-number now 2000)
-            (add-item (LineProduct. "Cheese" 10) 2)
-            (add-item (LineProduct. "Ham" 20) 1)
-            (add-item (LineProduct. "Juice" 15) 2))
+            (add-item 2 (LineProduct. "Cheese" 10))
+            (add-item 1 (LineProduct. "Ham" 20))
+            (add-item 15 (LineProduct. "Juice" 15)))
           stored-order (store! order)
           fetched-order (find-order order-number)
           nil-order (do (delete-order order-number) (find-order order-number))]
