@@ -46,7 +46,7 @@
 
   Total
   (total [this]
-    (let [line-totals (map #(total %) (:lines this))]
+    (let [line-totals (map total (:lines this))]
       (apply + line-totals))))
 
 ;; Order factory methods
